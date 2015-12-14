@@ -1,0 +1,89 @@
+<!doctype html>
+<HTML>
+<head>
+	<meta charset="utf-8">
+	<script type="text/javascript" src="https://code.jquery.com/jquery-1.11.1.js"></script>
+	<script type="text/javascript" src="https://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
+	<!--!link rel="stylesheet" type="text/css" href="https://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css"-->
+	<link rel="stylesheet" type="text/css" href="static/style.css">
+
+	
+
+	<title>Suggest a song</title>
+</head>
+<body>
+	<center>
+		<h1>Suggest a YouTube song</h1>
+		<p>
+		Make a mixed song list by suggesting a song worth listening to.</br>
+		Add a youtube URL of your song.</br>
+		</p>
+		<input type="text" class="inputs" id="name" placeholder="Your name" maxlength="20"></input></br>
+		<input type="text" class="inputs" id="yrl" placeholder="Youtube URL" maxlength="110"></input>
+		<input type="submit" class="btn1" value="Submit" onClick="submit()">
+		<iframe id="vid" width="420" height="315" style="visibility:hidden;"
+		src="" frameborder="0" allowfullscreen>
+		</iframe>
+		<input type="submit" class="btn1" value="Show/Hide Log" onclick="logs()">
+		<textarea class="inputs" id="log"></textarea>
+		<!--input type="text" class="inputs" id="log" style="visibility:visible;" 
+		-->
+		</p>
+		</p>
+		<p>
+		Disclaimer: </br>
+		This website was originally built for fun. This website and its developers do not take responsibility for unknown users post. Cheerio!
+	</p>
+	</center>
+
+	<script type="text/javascript">
+		function submit(){
+			if($("#name").val()=='') alert("Don't be a moron. Enter your name.");
+			if($("#yrl").val()=='') alert("Don't be a moron. Enter a YT URL");
+			else{
+
+				var na = $("#name").val();
+				var ur1 = $("#yrl").val();
+				var ur2 = ur1.replace("https://www.youtube.com/watch?v=", "http://www.youtube.com/embed/");
+				ur2 = ur2.replace("https://youtu.be/", "http://www.youtube.com/embed/")
+				console.log("ur1="+ur1);
+				console.log("ur2="+ur2);
+
+				$("#vid").css('visibility', 'visible');
+				$("#vid").attr('src',""+ur2);
+
+				var json_obj = {n:na, u:ur2};
+				$.post('icall',json_obj,function(data){
+					console.log("data"+data);
+					var jsonList = JSON.parse(data);
+					$("#log").val(jsonList[0].fields.name + " : "+ jsonList[0].fields.body);
+					//var toshow = "";
+
+					for (var i = 1; i < jsonList.length; i++) {
+							//debugger;
+						$("#log").val($("#log").val() +"\n"
+							+ jsonList[i].fields.name + " : "
+							+ jsonList[i].fields.body);
+						//toshow = toshow+"\n"
+						//+jsonList[i];
+					};
+					//$("#log").val(toshow);
+				});
+				
+			}
+		}
+	</script>
+
+	<script type="text/javascript">
+		function logs(){
+			if ($("#log").css('visibility')=='hidden') $("#log").css('visibility', 'visible');
+			else
+			$("#log").css('visibility', 'hidden');
+		}
+	</script>
+
+</body>
+</HTML>
+
+
+
